@@ -1,0 +1,25 @@
+{
+  "name": "phonebook",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "build": "npm install",
+    "start-dev": "nodemon index.js",
+    "start-prod": "node index.js",
+    "build-frontend": "cd ../phonebook-frontend && npm run build && cp -r dist ../phonebook-backend && cd ../phonebook-backend",
+    "deploy-to-fly": "npm run build-frontend && fly launch",
+    "deploy-to-render": "npm run build-frontend && git add . && git commit -m render-build && git push"
+  },
+  "dependencies": {
+    "morgan": "^1.10.0",
+    "nodemon": "^4.0.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.45.0",
+    "eslint-plugin-react": "^7.32.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.3"
+  }
+}
