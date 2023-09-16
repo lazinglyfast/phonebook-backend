@@ -32,6 +32,7 @@ let persons = [
 
 const app = express()
 app.use(cors({ origin: true }))
+app.use(express.static("build"))
 
 token("data", (req) => {
   if (req.method == "POST") {
