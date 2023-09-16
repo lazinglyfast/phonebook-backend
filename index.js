@@ -46,7 +46,7 @@ app.get("/", (_req, res) => {
   res.send("hello, world!")
 })
 
-app.get("/persons", (_req, res) => {
+app.get("/api/persons", (_req, res) => {
   res.json(persons)
 })
 
@@ -57,7 +57,7 @@ const generateId = () => {
   return maxId + 1
 }
 
-app.post("/persons", (req, res) => {
+app.post("/api/persons", (req, res) => {
   const fromClientPerson = req.body
   if (!fromClientPerson.name || !fromClientPerson.number) {
     res.status(400)
@@ -74,7 +74,7 @@ app.post("/persons", (req, res) => {
   res.json(person)
 })
 
-app.delete("/persons/:id", (req, res) => {
+app.delete("/api/persons/:id", (req, res) => {
   const id = req.params.id
   const length_before = persons.length
   persons = persons.filter(p => p.id != id)
@@ -85,7 +85,7 @@ app.delete("/persons/:id", (req, res) => {
   res.end()
 })
 
-app.put("/persons/:id", (req, res) => {
+app.put("/api/persons/:id", (req, res) => {
   const person = req.body
   if (!persons.find(p => p.id == person.id)) {
     res.status(400) // person does not exist
