@@ -24,12 +24,7 @@ app.get("/", (_req, res) => {
 app.get("/api/persons/:id", (req, res, next) => {
   Person.findById(req.params.id).then(person => {
     response.json(person)
-  }).catch(error => {
-    console.log(next)
-    console.log(error.name)
-    console.log(error)
-    return next(error)
-  })
+  }).catch(error => next(error))
 })
 
 app.get("/api/persons", (_req, res) => {
@@ -38,7 +33,7 @@ app.get("/api/persons", (_req, res) => {
   })
 })
 
-app.post("/api/persons", (req, res) => {
+app.post("/api/persons", (req, res, next) => {
   const fromClientPerson = req.body
   if (!fromClientPerson.name || !fromClientPerson.number) {
     res.status(400)
@@ -52,7 +47,7 @@ app.post("/api/persons", (req, res) => {
 
   person.save().then(person => {
     res.json(person)
-  })
+  }).catch(error => next(error))
 })
 
 app.delete("/api/persons/:id", (req, res, next) => {
@@ -63,9 +58,11 @@ app.delete("/api/persons/:id", (req, res, next) => {
 
 app.put("/api/persons/:id", (req, res, next) => {
   const person = {
+    name: req.body.name,
     number: req.body.number
   }
-  Person.findByIdAndUpdate(req.params.id, person, { new: true }).then(person => {
+  const options = { new: true, runValidators: true, context: "query" }
+  Person.findByIdAndUpdate(req.params.id, person, options).then(person => {
     res.json(person)
   }).catch(error => next(error))
 })
@@ -73,6 +70,9 @@ app.put("/api/persons/:id", (req, res, next) => {
 const errorHandler = (error, _req, res, next) => {
   if (error.name === "CastError") {
     return res.status(400).send({ error: "malformed id" })
+  }
+  if (error.name === "ValidationError") {
+    return res.status(400).json(error)
   }
   next(error)
 }
