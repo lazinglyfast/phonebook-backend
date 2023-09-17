@@ -1,34 +1,8 @@
 import express, { json } from "express"
 import cors from "cors"
 import morgan, { token } from "morgan"
-
-let persons = [
-  {
-    id: 0,
-    name: "teddy",
-    number: "123456789",
-  },
-  {
-    name: "Arto Hellas",
-    number: "040-123456",
-    id: 1,
-  },
-  {
-    name: "Ada Lovelace",
-    number: "39-44-5323523",
-    id: 2,
-  },
-  {
-    name: "Dan Abramov",
-    number: "12-43-234345",
-    id: 3,
-  },
-  {
-    name: "Mary Poppendieck",
-    number: "39-23-6423122",
-    id: 4,
-  },
-]
+import Person from "./models/person.js" // the .js is needed
+import { now } from "mongoose"
 
 const app = express()
 app.use(cors({ origin: true }))
@@ -47,15 +21,12 @@ app.get("/", (_req, res) => {
 })
 
 app.get("/api/persons", (_req, res) => {
-  res.json(persons)
+  Person.find({}).then(persons => {
+    res.json(persons)
+  })
 })
 
 app.use(json())
-
-const generateId = () => {
-  const maxId = persons.reduce((acc, p) => p.id > acc ? p.id : acc, Number.MIN_VALUE)
-  return maxId + 1
-}
 
 app.post("/api/persons", (req, res) => {
   const fromClientPerson = req.body
@@ -64,38 +35,32 @@ app.post("/api/persons", (req, res) => {
     return res.end()
   }
 
-  const person = {
-    id: generateId(),
+  const person = new Person({
     name: fromClientPerson.name,
     number: fromClientPerson.number,
-  }
+  })
 
-  persons.push(person)
-  res.json(person)
+  person.save().then(person => {
+    res.json(person)
+  })
 })
 
 app.delete("/api/persons/:id", (req, res) => {
-  const id = req.params.id
-  const length_before = persons.length
-  persons = persons.filter(p => p.id != id)
-  const length_after = persons.length
-  if (length_before == length_after) {
-    res.status(400) // person did not exist
-  }
-  res.end()
+  Person.findById(req.params.id).then(person => {
+    person.deleteOne().then(() => {
+      res.end()
+    })
+  })
 })
 
 app.put("/api/persons/:id", (req, res) => {
-  const person = req.body
-  if (!persons.find(p => p.id == person.id)) {
-    res.status(400) // person does not exist
-  }
-
-  persons = persons
-    .filter(p => p.id != person.id)
-    .concat(person)
-
-  res.json(person)
+  const fromClientPerson = req.body
+  Person.findById(req.params.id).then(person => {
+    person.number = fromClientPerson.number
+    person.save().then(person => {
+      res.json(person)
+    })
+  })
 })
 
 const PORT = process.env.PORT || 3001
