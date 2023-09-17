@@ -9,7 +9,7 @@ app.use(express.static("build"))
 app.use(json())
 
 token("data", (req) => {
-  if (req.method == "POST") {
+  if (req.method === "POST") {
     return JSON.stringify(req.body)
   }
 })
@@ -23,7 +23,7 @@ app.get("/", (_req, res) => {
 
 app.get("/api/persons/:id", (req, res, next) => {
   Person.findById(req.params.id).then(person => {
-    response.json(person)
+    res.json(person)
   }).catch(error => next(error))
 })
 
@@ -51,7 +51,7 @@ app.post("/api/persons", (req, res, next) => {
 })
 
 app.delete("/api/persons/:id", (req, res, next) => {
-  Person.findByIdAndDelete(req.params.id).then(_result => {
+  Person.findByIdAndDelete(req.params.id).then(() => {
     res.status(204).end()
   }).catch(error => next(error))
 })

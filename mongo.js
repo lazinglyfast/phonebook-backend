@@ -1,9 +1,9 @@
 import pkg from "mongoose"
-const { connect, disconnect, Schema, model, connection } = pkg
+const { connect, Schema, model, connection, set } = pkg
 
 set("strictQuery", false) // the default actually, allows empty {} filter
 
-const [_interpreter, _script, password, name, number] = process.argv
+const [, , password, name, number] = process.argv
 if (!password) {
   throw "password must be provided"
 }
@@ -31,5 +31,4 @@ if (name && number) {
   })
 }
 
-// disconnect()
 connection.close()
