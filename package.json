@@ -11,7 +11,7 @@
         "build-frontend": "rm -rf build ||: && mkdir build && cd ../phonebook-frontend && npm run build && cp -rp dist/* ../phonebook-backend/build && cd ../phonebook-backend",
         "deploy-to-fly": "npm run build-frontend && fly deploy",
         "deploy-to-render": "npm run build-frontend && git add . && git commit -m frontend-build && git push",
-        "deploy": "npm run deploy-to-render && deploy-to-fly"
+        "deploy": "npm run deploy-to-render && npm run deploy-to-fly"
     },
     "dependencies": {
         "cors": "^2.8.5",
